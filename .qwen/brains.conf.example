@@ -1,0 +1,8 @@
+# Конфигурация мозгов для Qwen Code
+# Каждая строка: folder = git-remote-url
+# Папки с префиксом individual-* — индивидуальные мозги (свободный пуш)
+# Другие папки — общие мозги (пуш содержимого свободен, изменения ядра требуют ревью)
+
+# Пример:
+# company-brain = https://github.com/your-org/company-brain.git
+# individual-alex = https://github.com/alex/individual-alex.git

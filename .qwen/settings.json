@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Edit(brains/individual-*/**)",
+      "Edit(brains/*/outputs/**)",
+      "Edit(brains/*/sessions/**)",
+      "Bash(command -v *)",
+      "Bash(gh auth *)",
+      "Bash(git clone *)",
+      "Bash(git -C brains/* *)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(bash .qwen/refresh-commands.sh*)",
+      "Bash(mkdir -p brains*)",
+      "Bash(uname*)"
+    ],
+    "deny": [
+      "Read(**/secrets/**)",
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Read(**/credentials/**)"
+    ]
+  },
+  "$version": 4
+}
