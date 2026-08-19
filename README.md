@@ -1,117 +1,89 @@
 # Infinite Brain Harness
 
-A multi-brain workspace: the repos root you open in Claude Code (or Codex) to work across more than one
-Infinite Brain at once. It mounts a few brains under `brains/`, routes your work to the right one, and
-keeps them synced over git (GitHub by default). It doubles as a registry root for an operation that runs
-many repos.
+Мульти-мозговой workspace: корневой репозиторий, который вы открываете в Claude Code (или Codex) для работы с несколькими Infinite Brain одновременно. Он монтирует несколько мозгов в `brains/`, направляет вашу работу в нужный мозг и синхронизирует их через git (по умолчанию GitHub). Также служит корнем реестра для операций, работающих со множеством репозиториев.
 
-The engine is the Infinite Brain OS, the public brain starter at
-https://github.com/starmynd-org/infinite-brain-os. The harness is the mount: it holds your brains side by
-side and keeps agents oriented and synced across them.
+Движок — Infinite Brain OS, публичный стартер мозга, доступный по адресу
+https://github.com/starmynd-org/infinite-brain-os. Harness — это крепление: он удерживает ваши мозги рядом друг с другом и поддерживает ориентацию агентов между ними.
 
-## Why a tier above the brain
+## Почему нужен уровень над мозгом
 
-A brain repo is self-contained: it carries its own orientation, knowledge, and startup discipline. But
-real work quickly spans more than one brain: a shared company or department brain everyone relies on, and
-your own individual brain for scratch and research. Three problems appear the moment the second brain
-exists:
+Репозиторий мозга самодостаточен: он содержит собственную ориентацию, знания и процедуры запуска. Однако
+реальная работа быстро охватывает более одного мозга: общий мозг компании или отдела, на который полагаются все, и
+ваш индивидуальный мозг для экспериментов и исследований. Три проблемы возникают сразу после появления второго мозга:
 
-1. An agent needs one place to orient from, or every session starts by guessing which brain is which.
-2. A brain must not absorb its siblings. A brain that tracks other repos' state stops being a brain.
-3. The brains need to sync. Your work must back up and the shared brain's releases must come down,
-   without you running git by hand.
+1. Агенту нужно одно место для ориентации, иначе каждая сессия начинается с угадывания, какой мозг какой.
+2. Мозг не должен поглощать своих соседей. Мозг, который отслеживает состояние других репозиториев, перестаёт быть мозгом.
+3. Мозги нужно синхронизировать. Ваша работа должна сохраняться, а обновления общего мозга должны поступать,
+   без необходимости ручного управления git.
 
-The harness solves all three. You open it, not a brain in isolation. It routes between the brains under
-`brains/`, and its `/start` and `/sync` commands do the git so you never have to.
+Harness решает все три проблемы. Вы открываете его, а не мозг в изоляции. Он направляет работу между мозгами в
+`brains/`, а его команды `/start` и `/sync` управляют git, так что вам никогда не придётся делать это вручную.
 
-## The workspace (primary)
+## Workspace (основной режим)
 
-`brains/` holds the brains you work across, each an independent git repo:
+`brains/` содержит мозги, с которыми вы работаете, каждый — независимый git-репозиторий:
 
-- a **shared brain** (a company brain, or a department brain that graduated to its own repo): the default
-  working surface, the canon everyone relies on;
-- your **individual brain** (`individual-<name>/`): your own layer, fewer guardrails.
+- **общий мозг** (мозг компании или отдела, который перерос в собственный репозиторий): основная рабочая поверхность, канон, на который полагаются все;
+- ваш **индивидуальный мозг** (`individual-<имя>/`): ваш личный слой с меньшими ограничениями.
 
-The routing rule: real and shared work goes to the shared brain; anything experimental or unproven starts
-in your individual brain; proven work is promoted up, never edited into the shared brain directly.
+Правило маршрутизации: реальная и общая работа идёт в общий мозг; любые экспериментальные или непроверенные задачи начинаются в вашем индивидуальном мозге; проверенная работа продвигается наверх, никогда не редактируя общий мозг напрямую.
 
-### Quickstart
+### Быстрый старт
 
-Prerequisites: git, an AI coding agent ([Claude Code](https://claude.com/claude-code) is the primary
-runtime), a GitHub account, and ideally the [GitHub CLI](https://cli.github.com/) (`gh`) for
-authentication. `/start` checks all of this and tells you what is missing.
+Требования: git, AI-агент для программирования ([Claude Code](https://claude.com/claude-code) — основная среда выполнения), аккаунт GitHub, и желательно [GitHub CLI](https://cli.github.com/) (`gh`) для аутентификации. `/start` проверяет всё это и сообщает, чего не хватает.
 
-1. Clone this repository to where you want your root, and open it in Claude Code:
+1. Клонируйте этот репозиторий туда, где хотите иметь корень, и откройте его в Claude Code:
 
    ```sh
    git clone https://github.com/starmynd-org/infinite-brain-harness.git repos
    ```
 
-2. In the chat, run **`/start`**. It establishes git access (GitHub by default), clones your brains into
-   `brains/`, validates and registers them, and runs `/sync`. On a brand-new root with no brains yet, it
-   creates them for you: your company brain starts as a clone of the public starter with origin
-   re-pointed at a private repo of your own (the public starter cannot be pushed to), and your
-   individual brain starts as your own empty private repo.
-3. Restart Claude Code when `/start` says so: the brains' own slash commands load only on restart.
-4. Work. Real work in the shared brain, experiments in your own; `/sync` backs everything up and pulls
-   the latest. `/workspace-help` explains the rest.
+2. В чате выполните **`/start`**. Он устанавливает доступ к git (по умолчанию GitHub), клонирует ваши мозги в `brains/`, проверяет и регистрирует их, затем выполняет `/sync`. На совершенно новом корне без мозгов он создаёт их для вас: ваш мозг компании начинается как клон публичного стартера с перенаправлением origin на ваш приватный репозиторий (в публичный стартер нельзя пушить), а ваш индивидуальный мозг начинается как ваш собственный ��устой приватный репозиторий.
+3. Перезапустите Claude Code, когда `/start` скажет об этом: собственные команды мозгов загружаются только после перезапуска.
+4. Работайте. Реальная работа в общем мозге, эксперименты в вашем собственном; `/sync` сохраняет всё и получает последние обновления. `/workspace-help` объясняет остальное.
 
-### Commands
+### Команды
 
-| Command | What it does |
+| Команда | Что делает |
 |---|---|
-| `/start` | Set up or wake up the machine: git access, create or clone the brains, validate and register them, then `/sync`. |
-| `/sync` | Push your individual brain; push shared-brain content; route shared-brain core changes to a `proposal/<slug>-<topic>` branch for review; pull the latest; refresh the copied command layer and the capability index. |
-| `/save` | Commit every brain with your name on it, no push. |
-| `/promote-to-department` | Package individual work for review before it reaches the shared brain. |
-| `/workspace-help` | Explain the workspace in plain words. |
-| `register-repo` | Register a child repo in the registry (see the registry root, below). |
+| `/start` | Настраивает или пробуждает машину: доступ к git, создаёт или клонирует мозги, проверяет и регистрирует их, затем `/sync`. |
+| `/sync` | Пушит ваш индивидуальный мозг; пушит содержимое общего мозга; направляет основные изменения общего мозга в ветку `proposal/<slug>-<topic>` для ревью; тянет последние обновления; обновляет копируемый слой команд и индекс возможностей. |
+| `/save` | Коммитит каждый мозг с вашим именем, без пуша. |
+| `/promote-to-department` | Упаковывает индивидуальную работу для ревью перед тем, как она попадёт в общий мозг. |
+| `/workspace-help` | Объясняет workspace простыми словами. |
+| `register-repo` | Регистрирует дочерний репозиторий в реестре (см. корень реестра ниже). |
 
-Each brain's own commands, skills, agents, and rules are copied up into this root by `/sync` so they work
-as slash commands here (after a Claude Code restart). `.claude/CAPABILITIES.md`, regenerated on sync,
-lists what each brain holds so you route work to the right one.
+Собственные команды, навыки, агенты и правила каждого мозга копируются в этот корень через `/sync`, поэтому они работают как слеш-команды здесь (после перезапуска Claude Code). `.claude/CAPABILITIES.md`, регенерируемый при синхронизации, перечисляет, что содержит каждый мозг, чтобы вы направляли работу в правильный.
 
-## The registry root (secondary)
+## Корень реестра (вторичный режим)
 
-An operation that runs many repos, several brains plus product and client codebases, also uses this root
-as a registry. Child repos live under `internal/` (repos you own) and `external/` (client-owned or
-co-operated, grouped under `external/<group>/`), each an independent git repo the harness ignores and
-knows only through a `repo-registry/` entry.
+Операция, работающая со многими репозиториями, несколькими мозгами плюс продуктовыми и клиентскими кодовыми базами, также использует этот корень как реестр. Дочерние репозитории находятся в `internal/` (репозитории, которыми вы владеете) и `external/` (клиентские или совместно управляемые, сгруппированные в `external/<группа>/`), каждый — независимый git-репозиторий, который harness игнорирует и знает только через запись в `repo-registry/`.
 
-Brains come in three tiers: one **company brain** (the standard-setter and upstream core), an
-**individual brain per person**, and **department brains** that graduate from folders to their own repo
-only when a real trust boundary fires. **App repos** are ordinary siblings with `repo_kind: app`, no
-brain ontology and no tier. To register a repo, follow `ADD-A-BRAIN.md` or run `register-repo`; the
-result is one new file under `repo-registry/`. The registry is the full map of the root; `brains/` is the
-subset you actively work across.
+Мозги бывают трёх уровней: один **мозг компании** (установитель стандартов и вышестоящее ядро), **индивидуальный мозг на человека**, и **мозги отделов**, которые переходят из папок в собственный репозиторий только при возникновении реальных границ доверия. **Репозитории приложений** — обычные соседи с `repo_kind: app`, без онтологии мозга и без уровня. Чтобы зарегистрировать репозиторий, следуйте `ADD-A-BRAIN.md` или выполните `register-repo`; результат — один новый файл в `repo-registry/`. Реестр — полная карта корня; `brains/` — подмножество, с которым вы активно работаете.
 
-## Layout
+## Расположение
 
-| Path | What it is |
+| Путь | Что это |
 |---|---|
-| `CLAUDE.md`, `AGENTS.md` | root orientation for Claude Code and Codex; mirrors of each other |
-| `.claude/commands/` | the workspace commands (`start`, `sync`, `save`, `promote-to-department`, `workspace-help`) and `register-repo` |
-| `.claude/refresh-commands.sh` | the copy-up and capability-index generator, run by `/start` and `/sync` |
-| `.claude/settings.json` | the workspace's permission guards (no model pin: your own default model applies) |
-| `brains/` | the brains you work across; cloned in by `/start`, each an independent ignored repo |
-| `ADD-A-BRAIN.md` | the registration procedure for the registry root |
-| `internal/`, `external/` | registry-root children (ignored siblings) |
-| `repo-registry/` | one entry per registered child |
+| `CLAUDE.md`, `AGENTS.md` | корневая ориентация для Claude Code и Codex; зеркальные копии друг друга |
+| `.claude/commands/` | команды workspace (`start`, `sync`, `save`, `promote-to-department`, `workspace-help`) и `register-repo` |
+| `.claude/refresh-commands.sh` | генератор копирования команд и индекса возможностей, запускаемый `/start` и `/sync` |
+| `.claude/settings.json` | защиты разрешений workspace (без фиксации модели: применяется ваша модель по умолчанию) |
+| `brains/` | мозги, с которыми вы работаете; клонируются через `/start`, каждый — игнорируемый независимый репозиторий |
+| `ADD-A-BRAIN.md` | процедура регистрации для корня реестра |
+| `internal/`, `external/` | дочерние элементы корня реестра (игнорируемые соседи) |
+| `repo-registry/` | одна запись на зарегистрированный дочерний элемент |
 
-## What the harness never carries
+## Что harness никогда не содержит
 
-- no brain content of its own: knowledge, doctrine, and entities live inside a brain
-- no child repo state: the brains under `brains/` and the children under `internal/`/`external/` are
-  independent git repos with their own remotes; the harness ignores their contents and provides no backup
-- no live runtime state or secrets: the copied command layer and the capability index are generated,
-  git-ignored, and regenerated by `/sync`; they are read-only downstream and never a second source of
-  truth; local agent settings stay untracked
+- собственного содержимого мозга: знания, доктрины и сущности живут внутри мозга
+- состояния дочерних репозиториев: мозги в `brains/` и дети в `internal/`/`external/` — независимые git-репозитории с собственными удалёнными репозиториями; harness игнорирует их содержимое и не предоставляет резервного копирования
+- активного состояния среды выполнения или секретов: копируемый слой команд и индекс возможностей генерируются, игнорируются git и регенерируются через `/sync`; они доступны только для чтения ниже по потоку и никогда не являются вторым источником истины; локальные настройки агента остаются неотслеживаемыми
 
-## Local files
+## Локальные файлы
 
-`.claude/CLAUDE.local.md` is available for personal, local-only notes; the shipped `.gitignore` keeps it
-and the rest of local agent state (`settings.local.json`, `mcp-servers.json`) out of git.
+`.claude/CLAUDE.local.md` доступен для личных, локальных заметок; предоставленный `.gitignore` сохраняет его и остальное локальное состояние агента (`settings.local.json`, `mcp-servers.json`) вне git.
 
-## License
+## Лицензия
 
-MIT. See `LICENSE`.
+MIT. Смотрите `LICENSE`.

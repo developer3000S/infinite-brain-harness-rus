@@ -1,24 +1,24 @@
 # register-repo
 
-Register a child repo in this harness.
+Зарегистрировать дочерний репозиторий в этом harness.
 
-Read `ADD-A-BRAIN.md` at the harness root and execute its four-step registration procedure
-exactly. That file is the single source of truth for the steps; do not improvise fields, do
-not skip the verification step, and do not restate the procedure from memory.
+Прочитайте `ADD-A-BRAIN.md` в корне harness и выполните его четырёхэтапную процедуру регистрации
+точно. Этот файл является единым источником истины для шагов; не импровизируйте с полями, не
+пропускайте этап проверки и не пересказывайте процедуру по памяти.
 
-Before executing, collect from the user whatever these require that was not given as an
-argument:
+Перед выполнением соберите от пользователя всё, что требуется, но не было предоставлено в качестве
+аргумента:
 
-- the child's slug and path (`internal/<slug>`, `external/<slug>`, or
-  `external/<group>/<slug>`)
-- its kind (`brain`, `app`, or `mixed`) and, for a brain, its tier
-- its remote URL, or `local-only`
+- slug и путь дочернего репозитория (`internal/<slug>`, `external/<slug>`, или
+  `external/<группа>/<slug>`)
+- его вид (`brain`, `app` или `mixed`) и, для мозга, его уровень
+- его удалённый URL, или `local-only`
 
-Invariants to hold while executing:
+Инварианты, которые должны сохраняться при выполнении:
 
-- exactly one harness file is created: `repo-registry/<slug>.md`, from
-  `repo-registry/_template.md`, with every field filled
-- the child itself stays untracked; `git status` at the harness root shows only the new
-  registry entry
-- finish by confirming the routing rule in `CLAUDE.md` resolves as expected with the new
-  entry in place
+- создаётся ровно один файл harness: `repo-registry/<slug>.md`, из
+  `repo-registry/_template.md`, с заполненным каждым полем
+- сам дочерний репозиторий остаётся неотслеживаемым; `git status` в корне harness показывает только новую
+  запись в реестре
+- завершите подтверждением того, что правило маршрутизации в `CLAUDE.md` разрешается ожидаемым образом с новой
+  записью на месте

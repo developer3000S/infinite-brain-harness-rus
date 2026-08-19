@@ -1,137 +1,137 @@
-# Add a Brain
+# Добавить мозг
 
-The registration playbook for the registry root, the harness's secondary shape. If you are
-setting up the workspace itself, this is not your entry point: start with `/start` per the
-README, which creates and mounts your brains under `brains/` and uses this file only for the
-registry-entry fields. This file covers registering child repos that live under `internal/`
-and `external/` (the first brain, every later brain, and app repos), because all of them go
-through the same four-step procedure. It is the single source of truth for that procedure;
-the `register-repo` command executes it, and no other file restates it.
+Плейбук регистрации для корня реестра, вторичной формы harness. Если вы
+настраиваете сам workspace, это не ваша точка входа: начните с `/start` согласно
+README, который создаёт и монтирует ваши мозги в `brains/` и использует этот файл только для
+полей записи реестра. Этот файл охватывает регистрацию дочерних репозиториев, которые находятся в `internal/`
+и `external/` (первый мозг, каждый последующий мозг и репозитории приложений), потому что все они проходят
+одну и ту же четырёхшаговую процедуру. Это единый источник истины для этой процедуры;
+команда `register-repo` выполняет её, и никакой другой файл не пересказывает её.
 
-## Before you start
+## Перед началом
 
-You have cloned the harness as your repos root and you are working at its root. The harness
-tracks only its own files: everything you place under `internal/` or `external/` is ignored
-by the harness's git and lives as an independent repo with its own remote and history.
+Вы склонировали harness как свой корень репозиториев и работаете в его корне. Harness
+отслеживает только свои собственные файлы: всё, что вы помещаете в `internal/` или `external/`, игнорируется
+git harness и существует как независимый репозиторий со своим собственным удалённым репозиторием и историей.
 
-## The first brain is the company brain
+## Первый мозг — это мозг компании
 
-Every harness normally has exactly one company brain: the standard-setter, the shared
-library, and the place agents orient into for cross-repo work. If the registry has no entry
-with `repo_kind: brain` and `brain_tier: company` yet, that is the brain to add first. The
-public brain starter at https://github.com/starmynd-org/infinite-brain-os is the intended
-first clone.
+Каждый harness обычно имеет ровно ��дин мозг компании: стандартизатор, общую
+библиотеку и место, в котором агенты ориентируются для межрепозиторной работы. Если в реестре нет записи
+с `repo_kind: brain` и `brain_tier: company` ещё, это мозг, который нужно добавить первым. Публичный
+стартер мозга по адресу https://github.com/starmynd-org/infinite-brain-os предназначен для
+первого клонирования.
 
-## The four steps
+## Четыре шага
 
-### Step 1: Clone or create the child
+### Шаг 1: Клонировать или создать дочерний репозиторий
 
-Put the child where its ownership says it belongs:
+Поместите дочерний репозиторий туда, куда говорит его принадлежность:
 
-- `internal/<slug>` for a repo your own operation owns and operates
-- `external/<slug>` for a client-owned or co-operated repo
-- `external/<group>/<slug>` when one client or partner has several repos; the group folder
-  keeps them together
+- `internal/<slug>` для репозитория, которым владеет и управляет ваша собственная операция
+- `external/<slug>` для репозитория, принадлежащего клиенту или совместно управляемого
+- `external/<group>/<slug>` когда у одного клиента или партнёра есть несколько репозиториев; папка группы
+  держит их вместе
 
-For a first company brain at a company called Acme:
+Для первого мозга компании в компании под названием Acme:
 
 ```sh
 git clone https://github.com/starmynd-org/infinite-brain-os.git internal/acme-brain
 ```
 
-The slug you choose here is the slug the registry entry carries. Pick it once and keep it.
+Slug, который вы выберете здесь, — это slug, который несёт запись реестра. Выберите его один раз и сохраните.
 
-For a brain cloned from the public starter, run the starter's own validation script from
-inside the fresh clone as a health check:
+Для мозга, клонированного из публичного стартера, запустите собственный скрипт валидации стартера из
+свежего клона как проверку работоспособности:
 
 ```sh
 bash _system/validate.sh
 ```
 
-It should exit 0 on a fresh clone. The brain's own startup documentation covers validation
-from then on; the harness never validates its children itself.
+Он должен завершиться с кодом 0 на свежем клоне. Собственная стартовая документация мозга покрывает валидацию
+с этого момента; harness никогда не валидирует своих детей самостоятельно.
 
-### Step 2: Create the registry entry
+### Шаг 2: Создать запись реестра
 
-Copy `repo-registry/_template.md` to `repo-registry/<slug>.md` and fill every field. The
-fields and their allowed values are listed inline in the template and explained in
-`repo-registry/README.md`. Two rules bind the classification:
+Скопируйте `repo-registry/_template.md` в `repo-registry/<slug>.md` и заполните каждое поле. Поля
+и их разрешённые значения перечислены в самом шаблоне и объяснены в
+`repo-registry/README.md`. Два правила связывают классификацию:
 
-- a brain must declare its tier (`individual`, `department`, or `company`)
-- an app must not carry a tier: omit the `brain_tier` line entirely
+- мозг должен объявить свой уровень (`individual`, `department` или `company`)
+- приложение не должно нести уровень: опустите строку `brain_tier` полностью
 
-One field needs care when the child was cloned from the public starter: `remote`. A fresh
-starter clone's origin still points at the public starter, a repository you cannot push to,
-so it is not this child's backup story. Do one of two things before you fill the field:
+Одному полю требуется внимание, когда дочерний репозиторий был клонирован из публичного стартера: `remote`. origin
+свежего клона стартера всё ещё указывает на публичный стартер, репозиторий, в который вы не можете пушить,
+поэтому это не история резервного копирования этого дочернего репозитория. Сделайте одну из двух вещей перед заполнением поля:
 
-- create an empty repository of your own, re-point origin at it, push, and record that URL:
+- создайте пустой репозиторий своего владения, перенаправьте origin на него, загрузите и запишите этот URL:
 
   ```sh
-  git -C internal/<slug> remote set-url origin <your-remote-url>
+  git -C internal/<slug> remote set-url origin <ваш-удалённый-url>
   git -C internal/<slug> push -u origin main
   ```
 
-- or record `remote: local-only` until you have one, and treat the brain as having no
-  backup in the meantime.
+- или запишите `remote: local-only` до тех пор, пока у вас не будет своего, и рассматривайте мозг как не имеющий
+  резервного копирования в это время.
 
-Recording the public starter's URL as the `remote` would record a backup story that does
-not exist.
+Запись URL публичного стартера как `remote` записала бы историю резервного копирования, которой не
+существует.
 
-`repo-registry/_example-company-brain.md` shows a complete, correctly filled entry for a
-company brain.
+`repo-registry/_example-company-brain.md` показывает полную, правильно заполненную запись для
+мозга компании.
 
-### Step 3: Commit the registry entry
+### Шаг 3: Закоммитить запись реестра
 
 ```sh
 git add repo-registry/<slug>.md
 git commit -m "Register <slug>"
 ```
 
-The child itself stays untracked: the ignore posture excludes everything under `internal/`
-and `external/`. Before you commit, `git status` at the harness root must show only the new
-registry file. If it shows anything from inside the child's directory, stop; the posture is
-broken and the problem must be fixed before anything is committed.
+Сам дочерний репозиторий остаётся неотслеживаемым: политика игнорирования исключает всё под `internal/`
+и `external/`. Перед коммитом `git status` в корне harness должен показывать только новый
+файл реестра. Если он показывает что-либо изнутри директории дочернего репозитория, остановитесь; политика
+нарушена, и проблему необходимо исправить перед любым коммитом.
 
-### Step 4: Verify routing
+### Шаг 4: Проверить маршрутизацию
 
-Open a fresh AI agent session at the harness root, with no other context, and confirm it
-orients correctly:
+Откройте новую сессию AI агента в корне harness, без какого-либо другого контекста, и подтвердите, что он
+правильно ориентируется:
 
-- for a company brain: the agent reads the root orientation, resolves the registry to the
-  new entry, and follows the brain's own startup inside `internal/<slug>`
-- for any other child: the agent can state from the registry what the repo is, what kind it
-  is, and where it lives
+- для мозга компании: агент читает ориентацию корня, разрешает реестр до
+  новой записи и следует собственному старту мозга внутри `internal/<slug>`
+- для любого другого дочернего репозитория: агент может заявить из реестра, что это за репозиторий, какого он вида,
+  и где находится
 
-The first registered brain is normally the company brain, so the first run of this step is
-the moment the whole root starts working.
+Первый зарегистрированный мозг обычно является мозгом компании, поэтому первый запуск этого шага —
+это момент, когда весь корень начинает работать.
 
-## Adding a second brain
+## Добавление второго мозга
 
-Same four steps. The usual second brains are:
+Те же четыре шага. Обычные вторые мозги:
 
-- an individual brain for a new teammate: `repo_kind: brain`, `brain_tier: individual`
-- a graduated department brain, split out of the company brain when a real trust boundary
-  demands it: `repo_kind: brain`, `brain_tier: department`
+- индивидуальный мозг для нового члена команды: `repo_kind: brain`, `brain_tier: individual`
+- продвинутый мозг отдела, выделенный из мозга компании, когда реальная граница доверия
+  требует этого: `repo_kind: brain`, `brain_tier: department`
 
-No harness file outside `repo-registry/` changes when a brain is added. The orientation
-files never name children; the registry is the routing table, so registration is the entire
-integration.
+Никакой файл harness вне `repo-registry/` не изменяется при добавлении мозга. Файлы ориентации
+никогда не называют детей; реестр — таблица маршрутизации, поэтому регистрация — это вся
+интеграция.
 
-Department graduation itself (deciding to split, moving the content, rewiring the company
-brain) is run from inside the company brain with its own tooling. The harness only receives
-the result: a new sibling under `internal/` and a new registry entry.
+Само выделение отдела (решение о разделении, перемещение содержимого, перекоммутация мозга
+компании) выполняется изнутри мозга компании с его собственными инструментами. Harness только получает
+результат: нового соседа в `internal/` и новую запись реестра.
 
-## Adding an app repo
+## Добавление репозитория приложения
 
-Same four steps, with `repo_kind: app` and no `brain_tier` line. Product codebases and
-client codebases are ordinary siblings: they get a registry entry so agents know what they
-are, and nothing else about the harness changes.
+Те же четыре шага, с `repo_kind: app` и без строки `brain_tier`. Кодовые базы продуктов и
+клиентс��ие кодовые базы — обычные соседи: они получают запись в реестре, чтобы агенты знали, что они собой представляют,
+и больше ничего в harness не меняется.
 
-## If something looks wrong
+## Если что-то выглядит неправильно
 
-- a child directory exists but has no registry entry: that is a posture violation; create
-  the entry (steps 2 through 4)
-- a registry entry exists but its directory is gone: the entry is stale; set its status to
-  `archived` or delete the entry
-- `git status` at the root shows files from inside a child: the ignore posture is broken;
-  fix `.gitignore` before committing anything
+- директория дочернего репозитория существует, но не имеет записи реестра: это нарушение политики; создайте
+  запись (шаги 2–4)
+- запись реестра существует, но её директория отсутствует: запись устарела; установите её статус в
+  `archived` или удалите запись
+- `git status` в корне показывает файлы изнутри дочернего репозитория: политика игнорирования нарушена;
+  исправьте `.gitignore` перед любым коммитом

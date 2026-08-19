@@ -1,76 +1,60 @@
-# /sync: back up my work and get the latest
+# /sync: сохранение моей работы и получение последних обновлений
 
-Sync every brain under `brains/`. Convention: a folder named `individual-*` is an individual brain (push
-freely); every other brain under `brains/` is a shared brain (content is free to push, core changes go to
-a review branch). Backend is plain git (GitHub by default). Use `GIT_TERMINAL_PROMPT=0` so git fails fast,
-and report any auth error as one friendly line, never as raw git output.
+Синхронизируйте каждый мозг в `brains/`. Соглашение: папка с именем `individual-*` — индивидуальный мозг (пушить свободно); каждый другой мозг в `brains/` — общий мозг (содержимое можно пушить свободно, основные изменения идут в ветку ревью). Бэкенд — обычный git (GitHub по умолчанию). Используйте `GIT_TERMINAL_PROMPT=0`, чтобы git быстро завершался с ошибкой, и сообщайте любую ошибку аутентификации одной дружественной строкой, никогда как сырой вывод git.
 
-## Step 0: Preflight
+## Шаг 0: Предварительная проверка
 
-If `brains/` has no brains, tell the person to run `/start` first and stop. Ensure each brain has a git
-identity set (from `/start`); set it if empty.
+Если в `brains/` нет мозгов, скажите человеку сначала запустить `/start` и остановитесь. Убедитесь, что у каждого мозга установлена git-идентичность (из `/start`); установите её, если пуста.
 
-## Step 1: Individual brains (free)
+## Шаг 1: Индивидуальные мозги (свободные)
 
-For each `brains/individual-*`:
+Для каждого `brains/individual-*`:
 
 ```bash
 git -C "$b" add -A
-git -C "$b" commit -m "<name>: <short summary>"      # skip if nothing to commit
+git -C "$b" commit -m "<имя>: <краткое описание>"      # пропустите, если нечего коммитить
 GIT_TERMINAL_PROMPT=0 git -C "$b" pull --rebase origin HEAD
 GIT_TERMINAL_PROMPT=0 git -C "$b" push origin HEAD
 ```
 
-On an auth error, say the backup did not go through (fix git access) and continue.
+При ошибке аутентификации скажите, что резервное копирование не прошло (исправьте доступ к git) и продолжайте.
 
-## Step 2: Shared brains (governed)
+## Шаг 2: Общие мозги (управляемые)
 
-For each shared brain (every brain under `brains/` not named `individual-*`):
+Для каждого общего мозга (каждого мозга в `brains/`, не названного `individual-*`):
 
-1. Pull the latest release first: `git -C "$b" fetch origin` then merge the shared branch
-   (`origin/main` or the brain's default). On a merge conflict on shared canon, do not force it: tell the
-   person to ask the brain's maintainer, and include the conflicting file names.
-2. Classify local changes (`git -C "$b" status --porcelain`):
-   - **content** (free): paths under `outputs/` or `sessions/`.
-   - **core** (needs review): anything else, especially `entities/`, `knowledge/`, `_system/`,
-     `workflows/`, `automations/`, `tools/`, `bin/`, `docs/`, `data/`, and root orientation.
-3. If **only content** changed: commit and push to the shared branch.
-4. If **any core** changed: do NOT push to the shared branch. Park the whole changeset on a review branch
-   so nothing core lands unreviewed:
+1. Сначала получите последний релиз: `git -C "$b" fetch origin`, затем слейте общую ветку (`origin/main` или стандартную ветку мозга). При конфликте слияния в общем каноне не форсируйте его: скажите человеку спросить у сопровождающего мозга и включите имена конфликтующих файлов.
+2. Классифицируйте локальные изменения (`git -C "$b" status --porcelain`):
+   - **содержимое** (свободное): пути в `outputs/` или `sessions/`.
+   - **ядро** (требует ревью): всё остальное, особенно `entities/`, `knowledge/`, `_system/`, `workflows/`, `automations/`, `tools/`, `bin/`, `docs/`, `data/`, и корневая ориентация.
+3. Если **изменилось только содержимое**: закоммитьте и пушите в общую ветку.
+4. Если **изменилось любое ядро**: НЕ пушите в общую ветку. Разместите весь набор изменений в ветке ревью, чтобы ничего ядра не попало без ревью:
    ```bash
-   git -C "$b" switch -c "proposal/<name>-<topic>"
-   git -C "$b" add -A && git -C "$b" commit -m "<name> proposal: <what and why>"
-   GIT_TERMINAL_PROMPT=0 git -C "$b" push -u origin "proposal/<name>-<topic>"
-   git -C "$b" switch <shared-branch>
+   git -C "$b" switch -c "proposal/<имя>-<тема>"
+   git -C "$b" add -A && git -C "$b" commit -m "<имя> предложение: <что и почему>"
+   GIT_TERMINAL_PROMPT=0 git -C "$b" push -u origin "proposal/<имя>-<тема>"
+   git -C "$b" switch <общая-ветка>
    ```
-   Then tell the person it changes the shared brain, so it is on a review branch; ask the brain's
-   maintainer to review and merge. The working copy is back on the shared branch and clean.
+   Затем скажите человеку, что это меняет общий мозг, поэтому оно находится в ветке ревью; попросите сопровождающего мозга провести ревью и слить. Рабочая копия вернулась на общую ветку и чиста.
 
-   **Solo deployments:** when the person IS the brain's maintainer, there is no one else to ping; the
-   review branch is still worth the pause, and they review it themselves. Show the diff, and on their
-   approval merge and clean up:
+   **Одиночные развёртывания:** когда человек ЯВЛЯЕТСЯ сопровождающим мозга, некого пингова́ть; ветка ревью всё ещё стоит паузы, и они проводят ревью сами. Покажите diff, и при их одобрении слейте и очистите:
 
    ```bash
-   git -C "$b" diff <shared-branch>..proposal/<name>-<topic>
-   git -C "$b" merge --no-ff "proposal/<name>-<topic>"
+   git -C "$b" diff <общая-ветка>..proposal/<имя>-<тема>
+   git -C "$b" merge --no-ff "proposal/<имя>-<тема>"
    GIT_TERMINAL_PROMPT=0 git -C "$b" push origin HEAD
-   git -C "$b" branch -d "proposal/<name>-<topic>"
-   GIT_TERMINAL_PROMPT=0 git -C "$b" push origin --delete "proposal/<name>-<topic>"
+   git -C "$b" branch -d "proposal/<имя>-<тема>"
+   GIT_TERMINAL_PROMPT=0 git -C "$b" push origin --delete "proposal/<имя>-<тема>"
    ```
 
-## Step 3: Refresh the command layer and capability index
+## Шаг 3: Обновление слоя команд и индекса возможностей
 
 ```bash
 bash .claude/refresh-commands.sh
 ```
 
-It copies each brain's `.claude/{commands,skills,agents,rules}` up into this root's `.claude/` (never
-overwriting the workspace's own commands; the shared brain wins a name collision), writes
-`.claude/COPIED-FROM.md` provenance, and regenerates `.claude/CAPABILITIES.md` (what each brain holds,
-with a one-line when-to-use). New copies load after a Claude Code restart.
+Он копирует `.claude/{commands,skills,agents,rules}` каждого мозга в `.claude/` этого корня (никогда не перезаписывая собственные команды workspace; общий мозг выигрывает при коллизии имён), записывает `.claude/COPIED-FROM.md` происхождение и регенерирует `.claude/CAPABILITIES.md` (что содержит каждый мозг, с однострочным описанием, когда использовать). Новые копии загружаются после перезапуска Claude Code.
 
-## Step 4: Report
+## Шаг 4: Отчёт
 
-In one short paragraph: what backed up where, whether a review branch was created and who to ping,
-whether a new shared release came in, and how many commands and skills the refresh copied up. Remind the
-person to restart Claude Code to load newly copied commands.
+Одним коротким абзацем: что куда сохранилось, была ли создана ветка ревью и кого пингова́ть, пришёл ли новый общий релиз и сколько команд и навыков скопировало обновление. Напомните человеку перезапустить Claude Code, чтобы загрузить вновь скопированные команды.

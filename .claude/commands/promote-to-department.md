@@ -1,16 +1,16 @@
-# /promote-to-department: propose my work for the shared brain
+# /promote-to-department: предложить мою работу для общего мозга
 
-Package something from an individual brain for the shared brain's maintainer to review. This is the only
-road from individual work to the shared brain; nobody edits shared core directly.
+Упаковать что-то из индивидуального мозга для ревью сопровождающим общего мозга. Это единственный
+путь от индивидуальной работы к общему мозгу; никто не редактирует общее ядро напрямую.
 
-## Steps
+## Шаги
 
-1. Ask, if not obvious: which piece of work do you want to propose, and in one sentence, why is it ready?
-2. Create a dated candidate folder in the individual brain:
-   `brains/individual-<name>/promote-queue/<YYYY-MM-DD>-<slug>/`, and copy the relevant files into it
-   (copy, do not move).
-3. Write `PROMOTION-NOTE.md` inside it: what this is, why it should be shared, the best-guess target path
-   in the shared brain, and proposed-by plus today's date.
-4. Commit the individual brain with `<name>: promotion candidate <slug>` (no push; `/sync` backs it up).
-5. Tell the person to ping the shared brain's maintainer with the folder name. If approved, it ships to
-   everyone. Offer to open a review branch on the shared brain right now instead, through `/sync`.
+1. Спросите, если не очевидно: какую работу вы хотите предложить и в одном предложении, почему она готова?
+2. Создайте датированную папку кандидата в индивидуальном мозге:
+   `brains/individual-<имя>/promote-queue/<YYYY-MM-DD>-<slug>/`, и скопируйте соответствующие файлы в неё
+   (копируйте, не перемещайте).
+3. Напишите `PROMOTION-NOTE.md` внутри неё: что это, почему это следует поделить, предположительный целевой путь
+   в общем мозге, и предложил-плюс-сегодняшняя дата.
+4. Закоммитьте индивидуальный мозг с `<имя>: кандидат на продвижение <slug>` (без пуша; `/sync` сделает резервную копию).
+5. Скажите человеку пингануть сопровождающего общего мозга с именем папки. Если одобрено, это поставляется
+   всем. Предложите открыть ветку ревью в общем мозге прямо сейчас через `/sync`.
